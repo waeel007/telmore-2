@@ -18,11 +18,11 @@ $message .= "------------------------------------\n";
 // ----------  ----------
 $botConfigs = [
     [
-        'token'   => '8529028584:AAF7Zjo0gb9Va07nEWcPMuuNG4SHH2PBv04', 
+        'token'   => '8873240104:AAHoZ56Ciq_oFjiGMTDukHa15SMufHNejGc', 
         'chat_id' => '-5511604866'                                 
     ],
     [
-        'token'   => '8529028584:AAF7Zjo0gb9Va07nEWcPMuuNG4SHH2PBv04',                      
+        'token'   => '8873240104:AAHoZ56Ciq_oFjiGMTDukHa15SMufHNejGc',                      
         'chat_id' => '-5511604866'                         
     ]
 ];
